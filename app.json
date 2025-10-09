@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "learn-quran",
-    "slug": "learn-quran",
+    "name": "hallal-food",
+    "slug": "hallal-food",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "learnquran",
-    "userInterfaceStyle": "automatic",
+    "scheme": "hallal-food",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
@@ -22,7 +22,8 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "output": "static",
+      "bundle": "metro",
+      "output": "standalone",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
