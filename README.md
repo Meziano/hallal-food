@@ -1,6 +1,12 @@
-# Welcome to your Expo app 👋
+# React Native with Expo
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Generate a project using:
+
+   ```
+   npx create-expo-app
+   ```
+For more information see [here](https://www.npmjs.com/package/create-expo-app)
+To make it simple use: `npx create-expo-app@latest ./`
 
 ## Get started
 
@@ -34,6 +40,77 @@ npm run reset-project
 ```
 
 This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+
+
+## Add style
+For a complete referece, see [here](https://www.nativewind.dev/docs/getting-started/installation)
+   ```
+   npm install nativewind tailwindcss react-native-reanimated react-native-safe-area-context
+   ```
+
+### Setup Tailwind CSS 
+Bei running 
+   ```
+   npx tailwindcss  init
+   ```
+This will generate the configuration file tailwind.config.js,
+
+Add the paths to all of your component files in your tailwind.config.js file.
+
+   ```
+   /** @type {import('tailwindcss').Config} */
+   module.exports = {
+     // NOTE: Update this to include the paths to all files that contain Nativewind classes.
+     content: ["./App.tsx", "./components/**/*.{js,jsx,ts,tsx}"],
+     presets: [require("nativewind/preset")],
+     theme: {
+       extend: {},
+     },
+     plugins: [],
+   }
+   ```
+Finally create a new file within the app folder and call it `globals.css` 
+and within it we have to import three things or rather add three Tailwind directives
+   ```
+   @tailwind base;
+   @tailwind components;
+   @tailwind utilities;
+   ```
+after that we have to set up the Babel preset so create a new file in the root of
+your directory called `babel.config.js` and paste
+
+   ```
+   module.exports = function (api) {
+     api.cache(true);
+     return {
+       presets: [
+         ["babel-preset-expo", { jsxImportSource: "nativewind" }],
+         "nativewind/babel",
+       ],
+     };
+   };
+   ```
+we also have to add or modify the Metro config
+   ```
+   npx expo customize metro.config.js
+   ```
+and modify it, pasting the following: 
+
+   ```
+   const { getDefaultConfig } = require("expo/metro-config");
+   const { withNativeWind } = require('nativewind/metro');
+   
+   const config = getDefaultConfig(__dirname)
+
+   module.exports = withNativeWind(config, { input: './globals.css' })
+   ```
+Import ./app/globals.css in _layout.tsx
+
+   ```
+   import "./global.css"
+   ```
+
+
 
 ## Learn more
 
