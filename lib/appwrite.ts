@@ -1,12 +1,30 @@
-import {Account, Avatars, Browser, Client, Databases, ID, Query, Storage, TablesDB} from "appwrite"  ;
-import {CreateUserPrams, GetMenuParams, SignInParams, User} from "@/type";
+ import { Account, Avatars, Client, Databases, ID, Query, Storage, TablesDB} from  'react-native-appwrite';
+import { CreateUserPrams, GetMenuParams, SignInParams, Category, User, MenuItem } from "@/type";
 
-export const appwriteConfig = {
+interface appwriteConfig {
+    endpoint: string,
+    projectId: string,
+    platform: string,
+    database: string,
+    bucketId: string,
+    userTableName: string,
+    menuTableName: string,
+    categoryTableName: string,
+    customizationsTableName: string,
+    menu_customizationsTableName: string
+}
+
+export const appwriteConfig: appwriteConfig  = {
     endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!,
     projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!,
     platform: process.env.EXPO_PUBLIC_APPWRITE_PLATFORM,
     database: process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID,
-    userTableName: process.env.EXPO_PUBLIC_APPWRITE_USER_COLLECTION_NAME,
+    bucketId: process.env.EXPO_PUBLIC_APPWRITE_BUCKET_ID,
+    userTableName: process.env.EXPO_PUBLIC_APPWRITE_USER_TABLE_NAME,
+    menuTableName: process.env.EXPO_PUBLIC_APPWRITE_MENU_TABLE_NAME,
+    categoryTableName: process.env.EXPO_PUBLIC_APPWRITE_CATEGORY_TABLE_NAME,
+    customizationsTableName: process.env.EXPO_PUBLIC_APPWRITE_CUSTOMIZATIONS_TABLE_NAME,
+    menu_customizationsTableName: process.env.EXPO_PUBLIC_APPWRITE_MENU_CUSTOMIZATIONS_TABLE_NAME
 }
 
 export const client = new Client();
@@ -14,7 +32,7 @@ export const client = new Client();
 client
     .setEndpoint(appwriteConfig.endpoint)
     .setProject(appwriteConfig.projectId)
-//    .setPlatform(appwriteConfig.platform)
+    .setPlatform(appwriteConfig.platform)
 
 export const account = new Account(client);
 export const databases = new Databases(client);
@@ -72,13 +90,6 @@ export const getCurrentUser = async () => {
         });
         const currentUser = response.rows[0]
         console.log("currentUser: ", currentUser);
-
-        /*const currentUser = await databases.listDocuments(
-            appwriteConfig.database,
-            appwriteConfig.userCollectionName,
-            [Query.equal('accountId', currentAccount.$id)]
-        )*/
-
         if(!currentUser) throw Error;
 
         return currentUser //.documents[0];
@@ -89,21 +100,23 @@ export const getCurrentUser = async () => {
 }
 
 
-/*
-export const getMenu = async ({ category, query }: GetMenuParams) => {
+
+export const getMenuItems = async ({ category, query, limit }: GetMenuParams) => {
     try {
         const queries: string[] = [];
 
         if(category) queries.push(Query.equal('categories', category));
         if(query) queries.push(Query.search('name', query));
+        if(limit) queries.push(Query.limit(limit));
+        console.log(`Queries: ${queries}`);
 
-        const menus = await databases.listDocuments(
-            appwriteConfig.databaseId,
-            appwriteConfig.menuCollectionId,
-            queries,
-        )
+        const menus = await tablesDB.listRows<MenuItem>({
+            databaseId: appwriteConfig.database,
+            tableId: appwriteConfig.menuTableName,
+            queries: queries.length > 0 ? queries : undefined,
+        })
 
-        return menus.documents;
+        return menus.rows;
     } catch (e) {
         throw new Error(e as string);
     }
@@ -111,14 +124,14 @@ export const getMenu = async ({ category, query }: GetMenuParams) => {
 
 export const getCategories = async () => {
     try {
-        const categories = await databases.listDocuments(
-            appwriteConfig.databaseId,
-            appwriteConfig.categoriesCollectionId,
-        )
+        const categories = await tablesDB.listRows<Category>({
+            databaseId: appwriteConfig.database,
+            tableId: appwriteConfig.categoryTableName,
+        })
 
-        return categories.documents;
+        return categories.rows;
     } catch (e) {
         throw new Error(e as string);
     }
 }
-*/
+
