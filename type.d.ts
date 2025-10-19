@@ -103,6 +103,13 @@ interface SignInParams {
 }
 
 interface GetMenuParams {
-    category: string;
-    query: string;
+    category?: string;
+    query?: string;
+    limit?: number;
+}
+
+export interface UseAppwriteOptions<T, P extends Record<string, string | number>> {
+    fn: (P) => Promise<T>;
+    params?: P;
+    skip?: boolean;
 }
